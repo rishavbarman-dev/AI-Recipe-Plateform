@@ -2,6 +2,7 @@
 
 import { freePantryScans, proTierLimit } from "@/lib/arcjet";
 import { checkUser } from "@/lib/checkUser";
+import { request } from "@arcjet/next";
 
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
