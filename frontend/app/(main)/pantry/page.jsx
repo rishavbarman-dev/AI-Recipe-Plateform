@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import PricingModal from "@/components/PricingModal";
 
 const Pantrypage = () => {
   const [items, setItems] = useState([]);
