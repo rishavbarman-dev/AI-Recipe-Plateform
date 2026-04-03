@@ -605,4 +605,43 @@ Rules:
 }
 
 // Get user's saved recipes
-export async function getSavedRecipes() {}
+export async function getSavedRecipes() {
+  try {
+    const user = await checkUser();
+    if (!user) {
+      throw new Error("user not authenticated");
+    }
+
+    // Fetch saved recipes with populated recipe data
+    const response = await fetch(
+      `${STRAPI_URL}/api/saved-recipes?filters[user][id][$eq]=${user.id}&populate[recipe][populate]=*&sort=savedAt:desc`,
+      {
+        headers: {
+          Authorization: `Bearer ${STRAPI_API_TOKEN}`,
+        },
+        caches: "no-store",
+      },
+    );
+
+    if(!response.ok) {
+      throw new Error("Failed to fetch saved recipes");
+    }
+    const data = await response.json();
+
+    // Extract recipe details from saved recipes
+    const recipes = data.data
+      .map((savedRecipe)=> savedRecipe.recipe)
+      .filter(Boolean); // remove null recipes
+
+    return {
+      success: true,
+      recipes,
+      count: recipes.length,
+      message: `You have ${recipes.length} saved recipe${recipes.length !== 1 ? "s" : ""} in your collection.`,
+    };
+
+  } catch (error) {
+    console.error("❌ Error in getSavedRecipes:", error);
+    throw new Error(error.message || "Failed to load saved recipes");
+  }
+}
